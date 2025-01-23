@@ -24,12 +24,10 @@ public class UserService {
     }
 
     public User createUser(String username, String password, String email, String role) {
-        // user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // return userRepository.save(user);
         String hashedPassword = passwordEncoder.encode(password);
         User user = new User(username, hashedPassword, email, role);
         // Simpan user ke database
-        return user;
+        return userRepository.save(user);
     }
 
     public User getUser(Long id) {
