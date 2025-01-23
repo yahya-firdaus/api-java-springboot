@@ -55,6 +55,10 @@ Alternatively, if you have the project set up in your IDE (e.g., IntelliJ IDEA, 
 The application will run on **http://localhost:8080** by default.
 
 - **Swagger UI**: Open your browser and visit **http://localhost:8080/swagger-ui/index.html** to view and interact with the API documentation.
+- **Login to Swagger**: You can log into Swagger UI with the following credentials:
+  - **Username**: `admin`
+  - **Password**: `admin123`
+  
 - **API Endpoints**: You can test all available endpoints through Swagger, or use any HTTP client like Postman or CURL to interact with the API.
 
 ### Example Endpoints:
