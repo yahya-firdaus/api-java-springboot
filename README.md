@@ -91,7 +91,7 @@ Once the project is built, you can run it using Maven:
 
 **`mvn spring-boot:run`**
 
-Alternatively, if you have the project set up in your IDE (e.g., IntelliJ IDEA, Eclipse), you can run the main class `com.example.demo.DemoApplication` directly.
+Alternatively, if you have the project set up in your IDE (e.g., IntelliJ IDEA, Eclipse), you can run the main class `com.example.api.DemoApplication` directly.
 
 ### 6. Access the API
 

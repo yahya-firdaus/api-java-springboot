@@ -72,6 +72,13 @@
             <artifactId>postgresql</artifactId>
             <version>42.5.0</version>  <!-- Pastikan menggunakan versi yang sesuai -->
         </dependency>
+
+        <!-- JWT Library -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.11.5</version>
+        </dependency>
     </dependencies>
 
     <build>
