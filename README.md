@@ -2,7 +2,7 @@
 
 This is a simple User Management API built using **Java Spring Boot** version **3.4.1**. The application provides basic functionality for managing users, including features like user creation, retrieval, and role assignment. The API is designed for simplicity and is intended for learning and prototype purposes.
 
-The backend is powered by an **in-memory H2 database** for lightweight, temporary data storage, making it ideal for testing and development purposes. The API is documented with **Swagger** to provide an interactive interface for users and developers.
+The backend is powered by a **PostgreSQL database** for persistent data storage, making it suitable for production environments. The API is documented with **Swagger** to provide an interactive interface for users and developers.
 
 ## Features
 
@@ -16,7 +16,7 @@ The backend is powered by an **in-memory H2 database** for lightweight, temporar
 - **Java 17** (LTS)
 - **Spring Boot 3.4.1**: A framework for building Java-based web applications.
 - **Spring Data JPA**: Simplifies database interactions and abstracts CRUD operations.
-- **H2 Database**: An in-memory database for lightweight, temporary data storage.
+- **PostgreSQL**: A powerful, open-source relational database system.
 - **Swagger (OpenAPI)**: For interactive API documentation and testing.
 - **Maven**: For project management and dependency management.
 
@@ -26,6 +26,7 @@ Before running the project, make sure you have the following installed:
 
 - **Java 17+**
 - **Maven** (for dependency management and building the project)
+- **PostgreSQL** (installed and running on your local machine or accessible remotely)
 
 ## Setup and Installation
 
@@ -36,21 +37,63 @@ Download or unzip the project files from the repository. You can either:
 - Download the ZIP archive from GitHub and extract it to your local machine, or
 - Use the GitHub interface to directly download the files.
 
-### 2. Build the Project
+### 2. Set Up PostgreSQL Database
+
+Before running the application, make sure PostgreSQL is installed and running. Then, create the `demo_db` database and a user `demo_user` with the password `password123`.
+
+#### Steps to create the database and user:
+
+1. Open PostgreSQL and log in as the `postgres` user:
+   **`sudo -u postgres psql`**
+
+2. Create the `demo_db` database:
+   **`CREATE DATABASE demo_db;`**
+
+3. Create the user `demo_user` with the password `password123`:
+   **`CREATE USER demo_user WITH PASSWORD 'password123';`**
+
+4. Grant the user access to the `demo_db` database:
+   **`GRANT ALL PRIVILEGES ON DATABASE demo_db TO demo_user;`**
+
+5. Exit `psql`:
+   **`\q`**
+
+### 3. Configure Database Connection
+
+In your **`application.properties`** (or **`application.yml`** if you use YAML), update the database connection settings to use PostgreSQL:
+
+- **`spring.datasource.url=jdbc:postgresql://localhost:5432/demo_db`**
+- **`spring.datasource.username=demo_user`**
+- **`spring.datasource.password=password123`**
+- **`spring.datasource.driver-class-name=org.postgresql.Driver`**
+
+For JPA configuration:
+
+- **`spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect`**
+- **`spring.jpa.hibernate.ddl-auto=update`**
+- **`spring.jpa.show-sql=true`**
+- **`spring.jpa.properties.hibernate.format_sql=true`**
+
+Optional connection pool configuration:
+
+- **`spring.datasource.hikari.maximum-pool-size=10`**
+- **`spring.datasource.hikari.connection-timeout=30000`**
+
+### 4. Build the Project
 
 Navigate to the project directory and build the project using Maven:
 
-**mvn clean install**
+**`mvn clean install`**
 
-### 3. Run the Application
+### 5. Run the Application
 
 Once the project is built, you can run it using Maven:
 
-**mvn spring-boot:run**
+**`mvn spring-boot:run`**
 
 Alternatively, if you have the project set up in your IDE (e.g., IntelliJ IDEA, Eclipse), you can run the main class `com.example.demo.DemoApplication` directly.
 
-### 4. Access the API
+### 6. Access the API
 
 The application will run on **http://localhost:8080** by default.
 
@@ -77,7 +120,9 @@ The API is documented using **Swagger**. You can access the interactive API docu
 
 ## Database
 
-The application uses an **H2 in-memory database** by default, which means that the database will be wiped out when the application is restarted. This is ideal for testing, learning, and prototyping but not recommended for production.
+The application uses **PostgreSQL** as the database. The database connection is configured to use the `demo_db` database, with the username `demo_user` and password `password123`.
+
+Make sure your PostgreSQL service is running and the database is accessible before starting the application.
 
 ## Security Considerations
 
