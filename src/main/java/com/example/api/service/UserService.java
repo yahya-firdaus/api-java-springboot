@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.NoSuchElementException;
-import java.util.Optional; // Pastikan impor ini ada
+import java.util.Optional;
 
 import java.util.List;
 
@@ -58,11 +58,6 @@ public class UserService {
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
-
-    // public User getUserByUsername(String username) {
-    //     return userRepository.findByUsername(username)
-    //             .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
-    // }
 
     public User getUserByUsername(String username) {
         return userRepository.findByUsername(username)
