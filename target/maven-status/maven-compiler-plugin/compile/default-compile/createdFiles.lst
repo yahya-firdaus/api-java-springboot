@@ -1,6 +1,10 @@
+com/example/api/util/JwtTokenUtil.class
+com/example/api/config/SwaggerConfig.class
 com/example/api/model/User.class
 com/example/api/security/SecurityConfig.class
+com/example/api/security/CustomUserDetailsService.class
 com/example/api/controller/UserController.class
 com/example/api/DemoApplication.class
+com/example/api/filter/JwtRequestFilter.class
 com/example/api/repository/UserRepository.class
 com/example/api/service/UserService.class

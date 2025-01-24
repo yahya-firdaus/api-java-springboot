@@ -4,12 +4,18 @@ This is a simple User Management API built using **Java Spring Boot** version **
 
 The backend is powered by a **PostgreSQL database** for persistent data storage, making it suitable for production environments. The API is documented with **Swagger** to provide an interactive interface for users and developers.
 
-## Features
+### **New Feature: JWT Authentication**
+This API now implements **JWT Authentication** to secure the endpoints. To access protected routes, users must authenticate via the login endpoint, and provide the generated JWT token in the request header for authorization. JWT tokens are required for the following endpoints:
+- **GET /api/users** — Retrieve all users
+- **GET /api/users/{id}** — Retrieve a specific user by ID
+
+### Features
 
 - **Create Users**: Add new users with specified usernames, passwords, emails, and roles.
-- **Retrieve Users**: Get a list of all users or retrieve user details by ID.
+- **Retrieve Users**: Get a list of all users or retrieve user details by ID. This now requires **JWT authentication**.
 - **Swagger Integration**: Interactive API documentation to explore and test API endpoints.
 - **Role Management**: Users are assigned roles such as `ADMIN`, `USER`, or `MODERATOR`.
+- **JWT Authentication**: Added **JWT-based authentication** to secure API endpoints, including token generation and validation for accessing protected resources.
 
 ## Technologies Used
 
@@ -19,86 +25,52 @@ The backend is powered by a **PostgreSQL database** for persistent data storage,
 - **PostgreSQL**: A powerful, open-source relational database system.
 - **Swagger (OpenAPI)**: For interactive API documentation and testing.
 - **Maven**: For project management and dependency management.
-
-## Prerequisites
-
-Before running the project, make sure you have the following installed:
-
-- **Java 17+**
-- **Maven** (for dependency management and building the project)
-- **PostgreSQL** (installed and running on your local machine or accessible remotely)
+- **JWT (JSON Web Token)**: For secure authentication and token-based access to the API.
 
 ## Setup and Installation
 
-### 1. Download the Project
+### 1. Clone the Project
 
-Download or unzip the project files from the repository. You can either:
-
-- Download the ZIP archive from GitHub and extract it to your local machine, or
-- Use the GitHub interface to directly download the files.
+Clone the repository to your local machine using your Git client.
 
 ### 2. Set Up PostgreSQL Database
 
-Before running the application, make sure PostgreSQL is installed and running. Then, create the `demo_db` database and a user `demo_user` with the password `password123`.
+Set up a PostgreSQL database and create the following user:
 
-#### Steps to create the database and user:
+- **Database**: `demo_db`
+- **User**: `demo_user`
+- **Password**: `password123`
 
-1. Open PostgreSQL and log in as the `postgres` user:
-   **`sudo -u postgres psql`**
+### 3. Configure the Database Connection
 
-2. Create the `demo_db` database:
-   **`CREATE DATABASE demo_db;`**
+Update the **application.yml** to connect to your PostgreSQL database with the appropriate credentials:
 
-3. Create the user `demo_user` with the password `password123`:
-   **`CREATE USER demo_user WITH PASSWORD 'password123';`**
+- **spring.datasource.url**: `jdbc:postgresql://localhost:5432/demo_db`
+- **spring.datasource.username**: `demo_user`
+- **spring.datasource.password**: `password123`
 
-4. Grant the user access to the `demo_db` database:
-   **`GRANT ALL PRIVILEGES ON DATABASE demo_db TO demo_user;`**
+### 4. JWT Token Utilization
 
-5. Exit `psql`:
-   **`\q`**
+Implement the JWT token creation and validation methods in **JwtTokenUtil** to generate and verify tokens for authentication.
 
-### 3. Configure Database Connection
+### 5. Create Authentication Endpoint
 
-In your **`application.properties`** (or **`application.yml`** if you use YAML), update the database connection settings to use PostgreSQL:
+Set up the **AuthController** to handle login requests and return a JWT token upon successful authentication.
 
-- **`spring.datasource.url=jdbc:postgresql://localhost:5432/demo_db`**
-- **`spring.datasource.username=demo_user`**
-- **`spring.datasource.password=password123`**
-- **`spring.datasource.driver-class-name=org.postgresql.Driver`**
+### 6. Configure Security
 
-For JPA configuration:
+Configure **Spring Security** to enforce JWT-based authentication, where users must provide a valid JWT token to access protected routes such as **/api/users**.
 
-- **`spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect`**
-- **`spring.jpa.hibernate.ddl-auto=update`**
-- **`spring.jpa.show-sql=true`**
-- **`spring.jpa.properties.hibernate.format_sql=true`**
+### 7. Build and Run the Application
 
-Optional connection pool configuration:
+Build the project and run the application using your IDE or Maven commands.
 
-- **`spring.datasource.hikari.maximum-pool-size=10`**
-- **`spring.datasource.hikari.connection-timeout=30000`**
+### 8. Access the API
 
-### 4. Build the Project
-
-Navigate to the project directory and build the project using Maven:
-
-**`mvn clean install`**
-
-### 5. Run the Application
-
-Once the project is built, you can run it using Maven:
-
-**`mvn spring-boot:run`**
-
-Alternatively, if you have the project set up in your IDE (e.g., IntelliJ IDEA, Eclipse), you can run the main class `com.example.api.DemoApplication` directly.
-
-### 6. Access the API
-
-The application will run on **http://localhost:8080** by default.
+Once the application is running, you can access the following:
 
 - **Swagger UI**: Open your browser and visit **http://localhost:8080/swagger-ui/index.html** to view and interact with the API documentation.
-- **Login to Swagger**: You can log into Swagger UI with the following credentials:
+- **Login to Swagger**: Use the login credentials to obtain a JWT token and pass it in the Authorization header for all protected routes.
   - **Username**: `admin`
   - **Password**: `admin123`
   
@@ -106,11 +78,12 @@ The application will run on **http://localhost:8080** by default.
 
 ### Example Endpoints:
 
-- **POST** `/api/users` — Create a new user
-- **GET** `/api/users` — Retrieve all users
-- **GET** `/api/users/{id}` — Retrieve a specific user by ID
-- **PUT** `/api/users/{id}` — Update user details
-- **DELETE** `/api/users/{id}` — Delete a user
+- **POST** `/api/auth/login` — Login to obtain a JWT token
+- **POST** `/api/users` — Create a new user (requires JWT token)
+- **GET** `/api/users` — Retrieve all users (requires JWT token)
+- **GET** `/api/users/{id}` — Retrieve a specific user by ID (requires JWT token)
+- **PUT** `/api/users/{id}` — Update user details (requires JWT token)
+- **DELETE** `/api/users/{id}` — Delete a user (requires JWT token)
 
 ## API Documentation
 
@@ -126,8 +99,8 @@ Make sure your PostgreSQL service is running and the database is accessible befo
 
 ## Security Considerations
 
-- **Password Handling**: In this prototype, passwords are stored as plain text. For a production-ready application, it is strongly recommended to hash passwords before storing them in the database (using algorithms like BCrypt).
-- **Authentication & Authorization**: Currently, the application does not include any form of authentication or authorization. You may consider adding Spring Security for securing the API in future updates.
+- **Password Handling**: In this prototype, passwords are stored as plain text. For a production-ready application, it is strongly recommended to hash passwords before storing them in the database (using algorithms like **BCrypt**).
+- **Authentication & Authorization**: The application now includes **JWT-based authentication** for accessing protected endpoints. Tokens are issued upon successful login and must be included in the request headers for secure access.
 
 ## Contributions
 
@@ -135,4 +108,4 @@ Feel free to fork the repository and submit pull requests if you'd like to contr
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the **MIT License**.

@@ -6,32 +6,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.NoSuchElementException;
+import java.util.Optional; // Pastikan impor ini ada
 
 import java.util.List;
 
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository userRepository;
 
-    // @Autowired
-    // private PasswordEncoder passwordEncoder;
-
-    private final BCryptPasswordEncoder passwordEncoder;
-
-    public UserService() {
-        this.passwordEncoder = new BCryptPasswordEncoder();
-    }
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User createUser(String username, String password, String email, String role) {
+        if (userRepository.findByUsername(username) != null) {
+            throw new IllegalArgumentException("Username already exists");
+        }
         String hashedPassword = passwordEncoder.encode(password);
         User user = new User(username, hashedPassword, email, role);
-        // Simpan user ke database
         return userRepository.save(user);
     }
 
     public User getUser(Long id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with ID: " + id));
     }
 
     public List<User> getAllUsers() {
@@ -40,18 +40,32 @@ public class UserService {
 
     public User updateUser(Long id, User user) {
         User existingUser = getUser(id);
-        if (existingUser != null) {
-            existingUser.setUsername(user.getUsername());
-            existingUser.setEmail(user.getEmail());
-            if (user.getPassword() != null) {
-                existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
-            }
-            return userRepository.save(existingUser);
+        existingUser.setUsername(user.getUsername());
+        existingUser.setEmail(user.getEmail());
+        if (user.getPassword() != null && !user.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        return null;
+        return userRepository.save(existingUser);
     }
 
     public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new IllegalArgumentException("User not found with ID: " + id);
+        }
         userRepository.deleteById(id);
+    }
+
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    // public User getUserByUsername(String username) {
+    //     return userRepository.findByUsername(username)
+    //             .orElseThrow(() -> new IllegalArgumentException("User not found with username: " + username));
+    // }
+
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NoSuchElementException("User not found with username: " + username));
     }
 }
